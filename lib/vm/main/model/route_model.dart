@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wxm/main.dart';
 
 class RouteModel {
   const RouteModel({
@@ -9,7 +10,7 @@ class RouteModel {
         assert(routeName != null),
         assert(buildRoute != null);
 
-  final String category;
+  final RouteCategory category;
   final String routeName;
   final WidgetBuilder buildRoute;
 
@@ -17,4 +18,10 @@ class RouteModel {
   String toString() {
     return '$runtimeType($routeName)';
   }
+}
+
+class RouteCategory {
+  final String category;
+
+  const RouteCategory({this.category});
 }
