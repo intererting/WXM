@@ -1,22 +1,21 @@
 import 'dart:async';
-import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-typedef void OnBannerClickListener(int index, dynamic itemData);
-typedef Widget BuildShowView(int index, dynamic itemData);
+typedef void OnBannerClickListener<M>(int index, M itemData);
+typedef Widget BuildShowView<M>(int index, M itemData);
 typedef void OnBannerPosition(int position);
 
 const IntegerMax = 0x7fffffff;
 
-class BannerView extends StatefulWidget {
+class BannerView<M> extends StatefulWidget {
   final double width;
   final double height;
   final double viewportFraction;
-  final List data;
-  final OnBannerClickListener onBannerClickListener;
-  final BuildShowView buildShowView;
+  final List<M> data;
+  final OnBannerClickListener<M> onBannerClickListener;
+  final BuildShowView<M> buildShowView;
   final OnBannerPosition bannerPosition;
 
   //延迟多少秒进入下一页

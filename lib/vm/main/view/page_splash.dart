@@ -3,10 +3,14 @@ import 'dart:async';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as Path;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:wxm/constant.dart';
 import 'package:wxm/sqlite/device_info_helper.dart';
 import 'package:wxm/utis.dart';
+import 'package:wxm/vm/home/view/home_page.dart';
 import 'package:wxm/vm/main/view/page_mixins.dart';
+import 'package:wxm/vm/main/view/page_user_guide.dart';
 
 import 'base_stateful_widget.dart';
 
@@ -23,8 +27,14 @@ class _SplashPageState extends BaseState<SplashPage> with PageMixins {
   void initState() {
     super.initState();
     _getDeviceInfo();
-    _timer = Timer(Duration(milliseconds: 3000), () {
-      Navigator.of(context).pushReplacementNamed('/home');
+    _timer = Timer(Duration(milliseconds: 3000), () async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool pass = prefs.getBool(SP_PASS_GUIDE);
+      if (pass != null && pass) {
+        Navigator.of(context).pushReplacementNamed(HomePage.routeName);
+      } else {
+        Navigator.of(context).pushReplacementNamed(UserGuidePage.routeName);
+      }
     });
   }
 
