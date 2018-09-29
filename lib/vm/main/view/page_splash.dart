@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as Path;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:wxm/constants/string_constant.dart';
+import 'package:wxm/constants.dart';
 import 'package:wxm/sqlite/device_info_helper.dart';
 import 'package:wxm/utis.dart';
+import 'package:wxm/view/base_stateful_widget.dart';
+import 'package:wxm/view/page_mixins.dart';
 import 'package:wxm/vm/main/view/home_page.dart';
-import 'package:wxm/vm/main/view/page_mixins.dart';
 import 'package:wxm/vm/main/view/page_user_guide.dart';
-
-import 'base_stateful_widget.dart';
 
 class SplashPage extends StatefulWidget {
   @override

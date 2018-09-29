@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:wxm/utis.dart';
 
 class TabHome extends StatefulWidget {
   @override
@@ -8,6 +10,11 @@ class TabHome extends StatefulWidget {
 class _TabHomeState extends State<TabHome> {
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(child: Text('tabHome'));
+    return CupertinoPageScaffold(
+      child: new CustomScrollView(slivers: <Widget>[
+        new SliverList(
+            delegate: SliverChildListDelegate(<Widget>[Text('xxxx')]))
+      ]),
+    );
   }
 }

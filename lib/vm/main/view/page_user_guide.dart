@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wxm/constants/string_constant.dart';
+import 'package:wxm/constants.dart';
 import 'package:wxm/utis.dart';
 import 'package:wxm/vm/main/view/home_page.dart';
 
