@@ -36,6 +36,11 @@ flutter:
   - images/user_guide_1.png
   - images/user_guide_2.png
   - images/user_guide_3.png
+  - images/tab_home.png
+  - images/tab_classify.png
+  - images/tab_message.png
+  - images/tab_mine.png
+  - images/tab_shoping_car.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

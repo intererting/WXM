@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:wxm/constant.dart';
-import 'package:wxm/vm/home/view/home_page.dart';
+import 'package:wxm/constants/string_constant.dart';
+import 'package:wxm/constants/wxm_colors.dart';
+import 'package:wxm/vm/main/view/home_page.dart';
 import 'package:wxm/vm/main/view/page_splash.dart';
 import 'package:wxm/vm/main/view/page_user_guide.dart';
 
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          canvasColor: bgColor,
+          canvasColor: WxmColors.bgColor,
           primaryColor: Colors.white,
           platform: TargetPlatform.iOS),
       initialRoute: '/',

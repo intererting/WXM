@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:wxm/constant.dart';
-import 'package:wxm/utis.dart';
-import 'package:wxm/vm/home/view/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wxm/constants/string_constant.dart';
+import 'package:wxm/utis.dart';
+import 'package:wxm/vm/main/view/home_page.dart';
 
 class UserGuidePage extends StatefulWidget {
   static const routeName = "/guide";
@@ -94,7 +94,7 @@ class _UserGuidePageState extends State<UserGuidePage> {
 
   _startHomePage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(SP_PASS_GUIDE, true);
+    await prefs.setBool(SpConstant.SP_PASS_GUIDE, true);
     Navigator.of(context).pushReplacementNamed(HomePage.routeName);
   }
 }
