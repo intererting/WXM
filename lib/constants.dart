@@ -8,3 +8,7 @@ class WxmColors {
 class SpConstant {
   static const SP_PASS_GUIDE = "pass_guide";
 }
+
+class WebConstant {
+  static const RESTFUL_SERVICE_HOST_WWW = "http://118.123.213.213:80/wxm_ws/";
+}
