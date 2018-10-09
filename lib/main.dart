@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:wxm/constants.dart';
-import 'package:wxm/vm/main/view/home_page.dart';
-import 'package:wxm/vm/main/view/page_splash.dart';
-import 'package:wxm/vm/main/view/page_user_guide.dart';
+import 'package:wxm/vm/main/page_home.dart';
+import 'package:wxm/vm/main/page_splash.dart';
+import 'package:wxm/vm/main/page_user_guide.dart';
 
 void main() => runZoned(() {
       runApp(new MyApp());

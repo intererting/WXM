@@ -2,20 +2,22 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:wxm/constants.dart';
 
-typedef void OnBannerClickListener<M>(int index, M itemData);
-typedef Widget BuildShowView<M>(int index, M itemData);
+typedef void OnBannerClickListener(int index, dynamic itemData);
+typedef Widget BuildShowView(int index, dynamic itemData);
 typedef void OnBannerPosition(int position);
 
 const IntegerMax = 0x7fffffff;
 
-class BannerView<M> extends StatefulWidget {
+class BannerView extends StatefulWidget {
   final double width;
   final double height;
   final double viewportFraction;
-  final List<M> data;
-  final OnBannerClickListener<M> onBannerClickListener;
-  final BuildShowView<M> buildShowView;
+  final List data;
+  final List<String> titles;
+  final OnBannerClickListener onBannerClickListener;
+  final BuildShowView buildShowView;
   final OnBannerPosition bannerPosition;
 
   //延迟多少秒进入下一页
@@ -30,10 +32,11 @@ class BannerView<M> extends StatefulWidget {
     @required this.buildShowView,
     @required this.width,
     @required this.height,
+    this.titles,
     this.bannerPosition,
     this.onBannerClickListener,
     this.delayTime = 3000,
-    this.scrollTime = 800,
+    this.scrollTime = 400,
     this.viewportFraction = 1.0,
   }) : super(key: key);
 
@@ -44,6 +47,7 @@ class BannerView<M> extends StatefulWidget {
 class BannerViewState extends State<BannerView> {
   PageController _pageController;
   Timer timer;
+  int currentPoi = 0;
 
   @override
   void initState() {
@@ -74,6 +78,27 @@ class BannerViewState extends State<BannerView> {
     }
   }
 
+  ///banner指示器
+  List<Widget> _buildBannerIndicator() {
+    if (widget.titles != null && widget.titles.isNotEmpty) {
+      final indicators = <Widget>[];
+      for (int i = 0; i < widget.titles.length; i++) {
+        final dot = Container(
+          margin: EdgeInsets.only(left: 5.0),
+          width: 8.0,
+          height: 8.0,
+          child: CircleAvatar(
+            backgroundColor: this.currentPoi % widget.titles.length == i
+                ? Colors.black
+                : Colors.grey,
+          ),
+        );
+        indicators.add(dot);
+      }
+      return indicators;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return new SizedBox(
@@ -99,20 +124,48 @@ class BannerViewState extends State<BannerView> {
                 onTapCancel: () {
                   _resetTimer();
                 },
-                child: new PageView.builder(
-                  controller: _pageController,
-                  physics:
-                      const PageScrollPhysics(parent: const ScrollPhysics()),
-                  itemBuilder: (BuildContext context, int index) {
-                    return widget.buildShowView(
-                        index, widget.data[index % widget.data.length]);
-                  },
-                  itemCount: IntegerMax,
-                  onPageChanged: (int position) {
-                    if (widget.bannerPosition != null) {
-                      widget.bannerPosition(position);
-                    }
-                  },
+                child: new Stack(
+                  children: <Widget>[
+                    new PageView.builder(
+                      controller: _pageController,
+                      physics: const PageScrollPhysics(
+                          parent: const ScrollPhysics()),
+                      itemBuilder: (BuildContext context, int index) {
+                        return widget.buildShowView(
+                            index, widget.data[index % widget.data.length]);
+                      },
+                      itemCount: IntegerMax,
+                      onPageChanged: (int position) {
+                        if (widget.bannerPosition != null) {
+                          widget.bannerPosition(position);
+                          setState(() {
+                            this.currentPoi = position;
+                          });
+                        }
+                      },
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        color: Color(0x33333333),
+                        padding: EdgeInsets.all(SCREEN_MARGIN),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: _buildBannerIndicator(),
+                            ),
+                            Text(
+                              widget.titles[currentPoi % widget.titles.length],
+                              style: TextStyle(
+                                  fontSize: 14.0, color: Colors.white),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ));
   }
