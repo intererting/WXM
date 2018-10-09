@@ -19,6 +19,7 @@ class BannerView extends StatefulWidget {
   final OnBannerClickListener onBannerClickListener;
   final BuildShowView buildShowView;
   final OnBannerPosition bannerPosition;
+  final PageController pageController;
 
   //延迟多少秒进入下一页
   final int delayTime;
@@ -33,6 +34,7 @@ class BannerView extends StatefulWidget {
     @required this.width,
     @required this.height,
     this.titles,
+    this.pageController,
     this.bannerPosition,
     this.onBannerClickListener,
     this.delayTime = 3000,
@@ -52,14 +54,16 @@ class BannerViewState extends State<BannerView> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(
-        initialPage: IntegerMax ~/ 2 - IntegerMax ~/ 2 % widget.data.length,
-        viewportFraction: widget.viewportFraction);
-    _resetTimer();
+    _pageController = widget.pageController == null
+        ? PageController(
+            initialPage: IntegerMax ~/ 2 - IntegerMax ~/ 2 % widget.data.length,
+            viewportFraction: widget.viewportFraction)
+        : widget.pageController;
+    resetTimer();
   }
 
-  _resetTimer() {
-    _clearTimer();
+  resetTimer() {
+    clearTimer();
     timer = new Timer.periodic(new Duration(milliseconds: widget.delayTime),
         (Timer timer) {
       if (_pageController.positions.isNotEmpty) {
@@ -71,7 +75,7 @@ class BannerViewState extends State<BannerView> {
     });
   }
 
-  _clearTimer() {
+  clearTimer() {
     if (timer != null) {
       timer.cancel();
       timer = null;
@@ -116,13 +120,13 @@ class BannerViewState extends State<BannerView> {
                   }
                 },
                 onTapDown: (details) {
-                  _clearTimer();
+                  clearTimer();
                 },
                 onTapUp: (details) {
-                  _resetTimer();
+                  resetTimer();
                 },
                 onTapCancel: () {
-                  _resetTimer();
+                  resetTimer();
                 },
                 child: new Stack(
                   children: <Widget>[
@@ -172,7 +176,7 @@ class BannerViewState extends State<BannerView> {
 
   @override
   void dispose() {
-    _clearTimer();
+    clearTimer();
     super.dispose();
   }
 }

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:sqflite/sqflite.dart';
 import 'package:wxm/constants.dart';
+import 'package:wxm/sqlite/device_info_helper.dart';
+import 'package:wxm/vm/main/sys_info_model.dart';
 
 final String columnSdkInt = "sdkInt";
 
@@ -28,9 +30,22 @@ final String column_customerServicePhone = "customerServicePhone";
 
 //数据库管理类
 class DbHelper {
+  static final Map<String, DbHelper> singleton = new Map();
   Database db;
 
-  Future call(String path) async {
+  factory DbHelper(String path) {
+    if (singleton.containsKey(path)) {
+      return singleton[path];
+    } else {
+      final dbHelper = new DbHelper._internal();
+      singleton[path] = dbHelper;
+      return dbHelper;
+    }
+  }
+
+  DbHelper._internal() {}
+
+  Future initDb(String path) async {
     db = await openDatabase(path, version: DB_VERSION,
         onCreate: (Database db, int version) async {
       //手机系统信息表
@@ -48,5 +63,49 @@ create table $TABLE_SYS_INFO (
     });
   }
 
-  Future close() async => db.close();
+  ///保存系统信息
+  Future insertSysInfo(SysData sysData) async {
+    if (null != db) {
+      await db.delete(TABLE_SYS_INFO, where: null, whereArgs: null);
+      db.insert(TABLE_SYS_INFO, <String, dynamic>{
+        column_resourceServerUrl: sysData.resourceServerUrl
+      });
+    }
+  }
+
+  ///获取系统信息
+  Future<SysData> getSysInfo() async {
+    if (null != db) {
+      List<Map> maps = await db.query(TABLE_SYS_INFO,
+          columns: null, where: null, whereArgs: null);
+      if (maps.isNotEmpty) {
+        return new SysData.fromJson(maps.first);
+      }
+    }
+  }
+
+  ///保存设备信息
+  Future insertDeviceInfo(DeviceInfo deviceInfo) async {
+    if (null != db) {
+      await db.delete(TABLE_DEVICE_INFO, where: null, whereArgs: null);
+      db.insert(TABLE_DEVICE_INFO, deviceInfo.toMap());
+    }
+  }
+
+  ///获取设备信息
+  Future<DeviceInfo> getDeviceInfo() async {
+    if (null != db) {
+      List<Map> maps = await db.query(TABLE_DEVICE_INFO,
+          columns: [columnSdkInt], where: null, whereArgs: null);
+      if (maps.isNotEmpty) {
+        return new DeviceInfo.fromMap(maps.first);
+      }
+    }
+  }
+
+  Future close() async {
+    if (null != db) {
+      db.close();
+    }
+  }
 }

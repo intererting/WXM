@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:sqflite/sqflite.dart';
 import 'package:wxm/constants.dart';
-import 'package:wxm/vm/main/db_helper.dart';
+import 'package:wxm/sqlite/db_helper.dart';
 
 class DeviceInfo {
   int id;

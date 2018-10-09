@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wxm/constants.dart';
 import 'package:wxm/view/base_stateful_widget.dart';
-import 'package:wxm/vm/classify/view/tab_classify.dart';
+import 'package:wxm/vm/classify/tab_classify.dart';
 import 'package:wxm/vm/home/tab_home.dart';
 import 'package:wxm/vm/message/view/tab_message.dart';
 import 'package:wxm/vm/mine/view/tab_mine.dart';

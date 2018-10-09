@@ -16,8 +16,8 @@ class TabHome extends StatefulWidget {
 }
 
 class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
-  RefreshController _refreshController;
-  AppLifecycleState _lifecycleState;
+  RefreshController _refreshController = RefreshController();
+  GlobalKey<BannerViewState> bannerViewKey = new GlobalKey();
   AdInfo _adInfo;
   List<String> _titles;
 
@@ -25,7 +25,6 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _refreshController = RefreshController();
     _refreshData(true);
   }
 
@@ -54,7 +53,7 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
       http.Response response = await http.post(dataURL);
       AdInfo adInfo = AdInfo.fromJson(json.decode(response.body));
       //格式化图片地址
-      List<String> titles = new List<String>();
+      List<String> titles = new List();
       for (AdData adData in adInfo.data) {
         titles.add(adData.adInfo);
         adData.imgUrl = await formatUrl(adData.imgUrl);
@@ -71,13 +70,16 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
     if (_adInfo == null) {
       return getEmptyView();
     } else {
-      print('_lifecycleState  $_lifecycleState');
       return new CustomScrollView(slivers: <Widget>[
         new SliverList(
             delegate: SliverChildListDelegate(<Widget>[
           new BannerView(
+              key: bannerViewKey,
               data: _adInfo.data,
               titles: _titles,
+              bannerPosition: (int position) {
+                debugPrint('banner position  $position');
+              },
               buildShowView: (int index, dynamic itemData) =>
                   _buildAdView(index, itemData),
               width: screenWidth,
@@ -88,9 +90,6 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
   }
 
   Widget _buildAdView(int index, AdData itemData) {
-//    formatUrl(itemData.imgUrl).then((url) {
-//      print(url);
-//    });
     return Image.network(
       itemData.imgUrl,
       fit: BoxFit.fill,
@@ -99,9 +98,21 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    setState(() {
-      _lifecycleState = state;
-    });
+    switch (state) {
+      case AppLifecycleState.inactive:
+        debugPrint('inactive');
+        break;
+      case AppLifecycleState.paused:
+        debugPrint('paused');
+        bannerViewKey.currentState.clearTimer();
+        break;
+      case AppLifecycleState.resumed:
+        debugPrint('resumed');
+        bannerViewKey.currentState.resetTimer();
+        break;
+      case AppLifecycleState.suspending:
+        break;
+    }
   }
 
   @override

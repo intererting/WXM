@@ -1,21 +1,7 @@
-import 'dart:async';
+import 'package:wxm/vm/main/common_model.dart';
 
-import 'package:sqflite/sqflite.dart';
-import 'package:wxm/constants.dart';
-import 'package:wxm/vm/main/db_helper.dart';
-
-class SysInfo {
-  String resultCode;
-  String resultMsg;
-  String resultCount;
-  SysData data;
-
-  SysInfo({this.resultCode, this.resultMsg, this.resultCount, this.data});
-
-  SysInfo.fromJson(Map<String, dynamic> json) {
-    resultCode = json['resultCode'];
-    resultMsg = json['resultMsg'];
-    resultCount = json['resultCount'];
+class SysInfo extends HttpResult<SysData> {
+  SysInfo.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
     data = json['data'] != null ? new SysData.fromJson(json['data']) : null;
   }
 
@@ -118,29 +104,4 @@ class SysData {
     data['customerServicePhone'] = this.customerServicePhone;
     return data;
   }
-}
-
-class SysInfoHelper {
-  Database db;
-
-  Future call(String path) async {
-    db = await openDatabase(path);
-  }
-
-  Future insert(SysData sysData) async {
-    await db.delete(TABLE_SYS_INFO, where: null, whereArgs: null);
-    await db.insert(TABLE_SYS_INFO,
-        <String, dynamic>{column_resourceServerUrl: sysData.resourceServerUrl});
-  }
-
-  Future<SysData> getSysInfo() async {
-    List<Map> maps = await db.query(TABLE_SYS_INFO,
-        columns: null, where: null, whereArgs: null);
-    if (maps.length > 0) {
-      return new SysData.fromJson(maps.first);
-    }
-    return null;
-  }
-
-  Future close() async => db.close();
 }

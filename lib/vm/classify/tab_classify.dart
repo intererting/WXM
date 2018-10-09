@@ -7,6 +7,11 @@ class TabClassify extends StatefulWidget {
 
 class _TabClassifyState extends State<TabClassify> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(child: Text('tabClassify'));
   }

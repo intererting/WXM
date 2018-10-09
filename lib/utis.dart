@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:wxm/constants.dart';
+import 'package:wxm/sqlite/db_helper.dart';
 import 'package:wxm/sqlite/device_info_helper.dart';
 import 'package:wxm/vm/main/sys_info_model.dart';
 
@@ -25,9 +26,8 @@ Future<String> getDbPath() async {
 ///格式化资源地址
 Future<String> formatUrl(String baseUrl) async {
   var databasesPath = await getDatabasesPath();
-  String path = join(databasesPath, "wxm.db");
-  SysInfoHelper helper = SysInfoHelper();
-  await helper(path);
+  String path = join(databasesPath, DB_NAME);
+  DbHelper helper = DbHelper(path);
   SysData sysData = await helper.getSysInfo();
   return '${sysData.resourceServerUrl}$baseUrl';
 }
