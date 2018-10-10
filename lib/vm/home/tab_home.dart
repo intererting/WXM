@@ -42,21 +42,25 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
 //   final WxmTheme wxmTheme=WxmTheme.of(context);
 //    print('wxmTheme  ${wxmTheme.serverResourceUrl}');
-    return CupertinoPageScaffold(
-      backgroundColor: WxmColors.bgColor,
-      child: SmartRefresher(
-          enablePullUp: !isListNullOrEmpty(_commodityDatas) &&
-              _commodityDatas.length % pageInfo.PER_PAGE == 0,
-          onRefresh: (up) {
-            _refreshData(up);
-          },
-          controller: _refreshController,
-          headerConfig: myRefreshConfig,
-          headerBuilder: (BuildContext context, int mode) =>
-              getRefreshHeaderView(mode: mode),
-          footerBuilder: (BuildContext context, int mode) =>
-              getLoadMoreFooterView(mode: mode),
-          child: _buildContent()),
+    return DefaultTextStyle(
+      style: TextStyle(
+          fontSize: COMMON_TEXT_SIZE, color: WxmColors.commonBlackColor),
+      child: CupertinoPageScaffold(
+        backgroundColor: WxmColors.bgColor,
+        child: SmartRefresher(
+            enablePullUp: !isListNullOrEmpty(_commodityDatas) &&
+                _commodityDatas.length % pageInfo.PER_PAGE == 0,
+            onRefresh: (up) {
+              _refreshData(up);
+            },
+            controller: _refreshController,
+            headerConfig: myRefreshConfig,
+            headerBuilder: (BuildContext context, int mode) =>
+                getRefreshHeaderView(mode: mode),
+            footerBuilder: (BuildContext context, int mode) =>
+                getLoadMoreFooterView(mode: mode),
+            child: _buildContent()),
+      ),
     );
   }
 
@@ -77,9 +81,71 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
         new SliverList(
             delegate: SliverChildListDelegate(<Widget>[
           _initBannerView(),
+          Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(SCREEN_MARGIN),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                GestureDetector(
+                  child: _buildTopCardView(
+                      bgColor: Colors.amber,
+                      title: '万寿讲堂',
+                      subTitle: '名家讲堂，传授长寿秘籍',
+                      imageRes: 'images/wsjt.png'),
+                  onTap: () {},
+                ),
+                _buildTopCardView(
+                    bgColor: Colors.purpleAccent,
+                    title: '万寿秘籍',
+                    subTitle: '数百种养身急救方法',
+                    imageRes: 'images/wsmj.png')
+              ],
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.all(SCREEN_MARGIN),
+            margin: EdgeInsets.only(top: SCREEN_MARGIN),
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    Image.asset('images/wsjt.png'),
+                    Text('康答要闻')
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    Image.asset('images/wsjt.png'),
+                    Text('康答要闻')
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    Image.asset('images/wsjt.png'),
+                    Text('康答要闻')
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    Image.asset('images/wsjt.png'),
+                    Text('康答要闻')
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    Image.asset('images/wsjt.png'),
+                    Text('康答要闻')
+                  ],
+                )
+              ],
+            ),
+          ),
           new Container(
             alignment: Alignment.center,
-            margin: EdgeInsets.symmetric(vertical: 12.0),
+            margin: EdgeInsets.symmetric(vertical: SCREEN_MARGIN),
             child: Text(
               '今日推荐',
               style: TextStyle(color: Colors.blue, fontSize: COMMON_TEXT_SIZE),
@@ -96,6 +162,42 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
     return Image.network(
       itemData.imgUrl,
       fit: BoxFit.fill,
+    );
+  }
+
+  ///顶部卡片导航
+  Widget _buildTopCardView(
+      {String title, String subTitle, String imageRes, Color bgColor}) {
+    return Container(
+      width: (screenWidth - SCREEN_MARGIN * 3) / 2,
+      height: 100.0,
+      child: new Card(
+        margin: EdgeInsets.all(0.0),
+        color: bgColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            new Container(
+              child: Text(
+                title,
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+              margin: EdgeInsets.only(top: SCREEN_MARGIN),
+            ),
+            Text(
+              subTitle,
+              style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12.0,
+                  color: Colors.black87),
+            ),
+            new Container(
+              margin: EdgeInsets.only(top: 8.0),
+              child: Image.asset(imageRes),
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -160,7 +262,10 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
               alignment: Alignment.topLeft,
               child: Text(
                 '￥${commodityData.feeOld}',
-                style: TextStyle(color: Colors.grey, fontSize: 13.0,decoration: TextDecoration.lineThrough),
+                style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 13.0,
+                    decoration: TextDecoration.lineThrough),
               ),
             )
           ],

@@ -43,6 +43,8 @@ flutter:
   - images/tab_message.png
   - images/tab_mine.png
   - images/tab_shoping_car.png
+  - images/wsjt.png
+  - images/wsmj.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
