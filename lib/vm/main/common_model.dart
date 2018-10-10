@@ -29,12 +29,17 @@ class RouteCategory {
   const RouteCategory({this.category});
 }
 
+const String HTTP_SUCCESS = "0";
+const String HTTP_FAILED = "1";
+
 ///网络返回信息
 class HttpResult<T> {
   String resultCode;
   String resultMsg;
   String resultCount;
   T data;
+
+  bool get httpSuccess => resultCode == HTTP_SUCCESS;
 
   HttpResult({this.resultCode, this.resultMsg, this.resultCount, this.data});
 

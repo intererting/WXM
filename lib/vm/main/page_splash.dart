@@ -1,19 +1,22 @@
 import 'dart:async';
-import 'dart:convert';
+import 'dart:io';
 
 import 'package:device_info/device_info.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as Path;
 import 'package:permission/permission.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:wxm/ConstantHelper.dart';
 import 'package:wxm/constants.dart';
+import 'package:wxm/http_client.dart';
 import 'package:wxm/sqlite/db_helper.dart';
 import 'package:wxm/sqlite/device_info_helper.dart';
 import 'package:wxm/utis.dart';
 import 'package:wxm/view/base_stateful_widget.dart';
 import 'package:wxm/view/page_mixins.dart';
+import 'package:wxm/view/wxm_theme.dart';
 import 'package:wxm/vm/main/page_home.dart';
 import 'package:wxm/vm/main/page_user_guide.dart';
 import 'package:wxm/vm/main/sys_info_model.dart';
@@ -26,6 +29,7 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends BaseState<SplashPage> with PageMixins {
   DeviceInfoPlugin _deviceInfo = new DeviceInfoPlugin();
   Timer _timer;
+  CancelToken _cancelToken = new CancelToken();
 
   @override
   void initState() {
@@ -70,6 +74,7 @@ class _SplashPageState extends BaseState<SplashPage> with PageMixins {
       _timer.cancel();
       _timer = null;
     }
+    _cancelToken.cancel();
   }
 
   ///初始表
@@ -78,14 +83,30 @@ class _SplashPageState extends BaseState<SplashPage> with PageMixins {
     String path = Path.join(databasesPath, DB_NAME);
     DbHelper helper = DbHelper(path);
     await helper.initDb(path);
-    //获取系统信息
-    String dataURL = '${WebConstant.RESTFUL_SERVICE_HOST_WWW}getSysInfo';
-    http.Response response = await http.post(dataURL);
-    helper.insertSysInfo(SysInfo.fromJson(json.decode(response.body)).data);
     //获取设备信息
-    AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
-    DeviceInfo deviceInfo = DeviceInfo(sdkInt: androidInfo.version.sdkInt);
-    helper.insertDeviceInfo(deviceInfo);
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
+      DeviceInfo deviceInfo = DeviceInfo(sdkInt: androidInfo.version.sdkInt);
+      helper.insertDeviceInfo(deviceInfo);
+    }
+    _getSysInfo(helper);
+  }
+
+  //获取系统信息
+  _getSysInfo(DbHelper helper) async {
+    try {
+      Response response = await WxmHttpClient()
+          .dio
+          .post('getSysInfo', cancelToken: _cancelToken);
+      if (isSuccessResponse(response)) {
+        SysData sysData = SysInfo.fromJson(response.data).data;
+//        WxmTheme wxmTheme = WxmTheme.of(context);
+//        wxmTheme.serverResourceUrl = sysData.resourceServerUrl;
+//        ConstantHelper constantHelper = new ConstantHelper();
+//        constantHelper.serverResourcesUrl = sysData.resourceServerUrl;
+        helper.insertSysInfo(sysData);
+      }
+    } catch (e) {}
   }
 
   ///申请权限

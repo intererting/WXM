@@ -152,7 +152,8 @@ class BannerViewState extends State<BannerView> {
                       alignment: Alignment.bottomCenter,
                       child: Container(
                         color: Color(0x33333333),
-                        padding: EdgeInsets.all(SCREEN_MARGIN),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SCREEN_MARGIN, vertical: 5.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[

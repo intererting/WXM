@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:wxm/constants.dart';
 import 'package:wxm/utis.dart';
@@ -27,6 +28,7 @@ Widget getLoadMoreFooterView({int mode}) {
     refreshingText: '正在加载更多',
     releaseText: '放开加载更多',
     idleText: '上拉加载更多',
+    idleIcon: const Icon(Icons.arrow_upward, color: Colors.grey),
     noDataText: '没有更多数据',
     failedText: '加载失败',
     completeText: '加载完成',

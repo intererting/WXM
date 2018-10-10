@@ -49,6 +49,7 @@ class DbHelper {
     db = await openDatabase(path, version: DB_VERSION,
         onCreate: (Database db, int version) async {
       //手机系统信息表
+      print('openDatabase  onCreate');
       await db.execute('''
 create table $TABLE_DEVICE_INFO ( 
   $column_id integer primary key autoincrement, 

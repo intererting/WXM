@@ -31,3 +31,5 @@ Future<String> formatUrl(String baseUrl) async {
   SysData sysData = await helper.getSysInfo();
   return '${sysData.resourceServerUrl}$baseUrl';
 }
+
+bool isListNullOrEmpty(List list) => list == null || list.isEmpty;

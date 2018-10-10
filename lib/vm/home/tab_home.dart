@@ -1,15 +1,20 @@
-import 'dart:convert';
+import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import "package:pull_to_refresh/pull_to_refresh.dart";
+import 'package:wxm/ConstantHelper.dart';
+import 'package:wxm/common_model.dart';
 import 'package:wxm/constants.dart';
+import 'package:wxm/http_client.dart';
 import 'package:wxm/utis.dart';
 import 'package:wxm/view/banner.dart';
 import 'package:wxm/view/refresh_view.dart';
-import 'package:wxm/vm/home/tab_home_model.dart';
+import 'package:wxm/vm/home/model/ad_model.dart';
+import 'package:wxm/vm/home/model/commodity_model.dart';
 
+///首页
 class TabHome extends StatefulWidget {
   @override
   _TabHomeState createState() => _TabHomeState();
@@ -18,8 +23,13 @@ class TabHome extends StatefulWidget {
 class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
   RefreshController _refreshController = RefreshController();
   GlobalKey<BannerViewState> bannerViewKey = new GlobalKey();
+  final CancelToken _cancelToken = new CancelToken();
+  PageInfo pageInfo = new PageInfo();
+  List<CommodityData> _commodityDatas = new List();
+  List<String> _titles = new List();
+
+//  ConstantHelper constantHelper = new ConstantHelper();
   AdInfo _adInfo;
-  List<String> _titles;
 
   @override
   void initState() {
@@ -30,8 +40,13 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+//   final WxmTheme wxmTheme=WxmTheme.of(context);
+//    print('wxmTheme  ${wxmTheme.serverResourceUrl}');
     return CupertinoPageScaffold(
+      backgroundColor: WxmColors.bgColor,
       child: SmartRefresher(
+          enablePullUp: !isListNullOrEmpty(_commodityDatas) &&
+              _commodityDatas.length % pageInfo.PER_PAGE == 0,
           onRefresh: (up) {
             _refreshData(up);
           },
@@ -49,47 +64,35 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
   void _refreshData(bool up) async {
     if (up) {
       print('_refreshData');
-      String dataURL = '${WebConstant.RESTFUL_SERVICE_HOST_WWW}getAdList';
-      http.Response response = await http.post(dataURL);
-      AdInfo adInfo = AdInfo.fromJson(json.decode(response.body));
-      //格式化图片地址
-      List<String> titles = new List();
-      for (AdData adData in adInfo.data) {
-        titles.add(adData.adInfo);
-        adData.imgUrl = await formatUrl(adData.imgUrl);
-      }
-      //初始化标题
-      setState(() {
-        this._adInfo = adInfo;
-        this._titles = titles;
-      });
+      _getAdInfo();
+      _getCommodityList();
     }
   }
 
   Widget _buildContent() {
-    if (_adInfo == null) {
+    if (_adInfo == null && isListNullOrEmpty(_commodityDatas)) {
       return getEmptyView();
     } else {
       return new CustomScrollView(slivers: <Widget>[
         new SliverList(
             delegate: SliverChildListDelegate(<Widget>[
-          new BannerView(
-              key: bannerViewKey,
-              data: _adInfo.data,
-              titles: _titles,
-              bannerPosition: (int position) {
-                debugPrint('banner position  $position');
-              },
-              buildShowView: (int index, dynamic itemData) =>
-                  _buildAdView(index, itemData),
-              width: screenWidth,
-              height: 180.0)
-        ]))
+          _initBannerView(),
+          new Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.symmetric(vertical: 12.0),
+            child: Text(
+              '今日推荐',
+              style: TextStyle(color: Colors.blue, fontSize: COMMON_TEXT_SIZE),
+            ),
+          )
+        ])),
+        _initCommodityView(),
       ]);
     }
   }
 
   Widget _buildAdView(int index, AdData itemData) {
+//    WxmTheme wxmTheme = WxmTheme.of(context);
     return Image.network(
       itemData.imgUrl,
       fit: BoxFit.fill,
@@ -115,9 +118,140 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
     }
   }
 
+  ///列表Item
+  Widget _buildGridItemView(BuildContext context, int index) {
+    CommodityData commodityData = _commodityDatas[index];
+//    WxmTheme wxmTheme = WxmTheme.of(context);
+    return Container(
+      margin: EdgeInsets.only(
+          left: index % 2 == 0 ? SCREEN_MARGIN : 0.0,
+          right: index % 2 != 0 ? SCREEN_MARGIN : 0.0),
+      child: Card(
+        margin: EdgeInsets.all(0.0),
+        color: Colors.white,
+        child: Column(
+          children: <Widget>[
+            Image.network(
+              commodityData.commodityLogoUrl,
+              width: screenWidth - SCREEN_MARGIN * 3,
+              height: 100.0,
+              fit: BoxFit.fill,
+            ),
+            Container(
+              margin: EdgeInsets.all(6.0),
+              alignment: Alignment.topLeft,
+              child: Text(
+                commodityData.commodityName,
+                maxLines: 2,
+                style: TextStyle(
+                    fontSize: COMMON_TEXT_SIZE, fontWeight: FontWeight.w600),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(left: 6.0),
+              alignment: Alignment.topLeft,
+              child: Text(
+                '￥${commodityData.feeNow}',
+                style: TextStyle(color: Colors.red, fontSize: COMMON_TEXT_SIZE),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(left: 10.0),
+              alignment: Alignment.topLeft,
+              child: Text(
+                '￥${commodityData.feeOld}',
+                style: TextStyle(color: Colors.grey, fontSize: 13.0,decoration: TextDecoration.lineThrough),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
+  }
+
+  ///广告信息
+  void _getAdInfo() async {
+    try {
+      Response response = await WxmHttpClient()
+          .dio
+          .post('getAdList', cancelToken: _cancelToken);
+      if (isSuccessResponse(response)) {
+        AdInfo adInfo = AdInfo.fromJson(response.data);
+        List<String> titles = new List();
+        for (AdData adData in adInfo.data) {
+          titles.add(adData.adInfo);
+          adData.imgUrl = await formatUrl(adData.imgUrl);
+        }
+        setState(() {
+          this._adInfo = adInfo;
+          this._titles = titles;
+        });
+      }
+    } catch (e) {}
+  }
+
+  ///首页商品信息
+  void _getCommodityList() async {
+    try {
+      Response response = await WxmHttpClient().dio.post('getHomeCommodityList',
+          data: {
+            'userId': '1000000000',
+            'lastTime': pageInfo.lastTime,
+            'pageNum': pageInfo.pageNo
+          },
+          options: new Options(
+              contentType:
+                  ContentType.parse("application/x-www-form-urlencoded")),
+          cancelToken: _cancelToken);
+      if (isSuccessResponse(response)) {
+        List<CommodityData> commodityDatas =
+            CommodityInfo.fromJson(response.data).data;
+        for (CommodityData commodityData in commodityDatas) {
+          commodityData.commodityLogoUrl =
+              await formatUrl(commodityData.commodityLogoUrl);
+        }
+        setState(() {
+          _commodityDatas = commodityDatas;
+        });
+      }
+    } catch (e) {} finally {
+      _refreshController.sendBack(true, RefreshStatus.completed);
+    }
+//    print(json.encode(response.data));
+  }
+
+  Widget _initBannerView() {
+    if (_adInfo != null) {
+      return new BannerView(
+          key: bannerViewKey,
+          data: _adInfo.data,
+          titles: _titles,
+          bannerPosition: (int position) {},
+          buildShowView: (int index, dynamic itemData) =>
+              _buildAdView(index, itemData),
+          width: screenWidth,
+          height: 180.0);
+    }
+  }
+
+  Widget _initCommodityView() {
+    return new SliverGrid(
+      gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.88,
+          mainAxisSpacing: SCREEN_MARGIN,
+          crossAxisSpacing: SCREEN_MARGIN),
+      delegate: new SliverChildBuilderDelegate(
+        (BuildContext context, int index) => _buildGridItemView(context, index),
+        childCount:
+            isListNullOrEmpty(_commodityDatas) ? 0 : _commodityDatas.length,
+      ),
+    );
   }
 }
