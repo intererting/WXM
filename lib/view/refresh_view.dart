@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:wxm/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:wxm/utis.dart';
 
 Widget getRefreshHeaderView({int mode}) {

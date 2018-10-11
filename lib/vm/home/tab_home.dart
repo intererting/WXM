@@ -13,6 +13,7 @@ import 'package:wxm/view/banner.dart';
 import 'package:wxm/view/refresh_view.dart';
 import 'package:wxm/vm/home/model/ad_model.dart';
 import 'package:wxm/vm/home/model/commodity_model.dart';
+import 'package:wxm/vm/home/page_wsjt.dart';
 
 ///首页
 class TabHome extends StatefulWidget {
@@ -93,7 +94,12 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
                       title: '万寿讲堂',
                       subTitle: '名家讲堂，传授长寿秘籍',
                       imageRes: 'images/wsjt.png'),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context, rootNavigator: true)
+                        .push(new CupertinoPageRoute(builder: (BuildContext _) {
+                      return WsjtPage();
+                    }));
+                  },
                 ),
                 _buildTopCardView(
                     bgColor: Colors.purpleAccent,

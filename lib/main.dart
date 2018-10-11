@@ -29,9 +29,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return new MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          primaryColor: Colors.white,
-          platform: TargetPlatform.iOS),
+      theme:
+          ThemeData(primaryColor: Colors.white, platform: TargetPlatform.iOS),
       builder: (BuildContext context, Widget child) {
         return WxmTheme(
           child: child,

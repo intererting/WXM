@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wxm/constants.dart';
 import 'package:wxm/utis.dart';
 import 'package:wxm/vm/main/page_home.dart';
+import 'package:flutter/material.dart';
 
 class UserGuidePage extends StatefulWidget {
   static const routeName = "/guide";

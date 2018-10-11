@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 class WxmTheme extends InheritedWidget {
   final String serverResourceUrl = "";

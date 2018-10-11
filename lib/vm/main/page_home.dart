@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:wxm/constants.dart';
 import 'package:wxm/view/base_stateful_widget.dart';
 import 'package:wxm/vm/classify/tab_classify.dart';
+import 'package:wxm/vm/home/nav_test.dart';
+import 'package:wxm/vm/home/page_wsjt.dart';
 import 'package:wxm/vm/home/tab_home.dart';
 import 'package:wxm/vm/message/view/tab_message.dart';
 import 'package:wxm/vm/mine/view/tab_mine.dart';
@@ -29,7 +31,7 @@ class _HomePageState extends BaseState<HomePage> {
           child: CupertinoTabScaffold(
               tabBar: CupertinoTabBar(
                   inactiveColor: Colors.grey,
-                  backgroundColor: Colors.white,
+//                  backgroundColor: Colors.white,
                   iconSize: 23.0,
                   activeColor: WxmColors.commonBlackColor,
                   items: <BottomNavigationBarItem>[
@@ -62,7 +64,12 @@ class _HomePageState extends BaseState<HomePage> {
                   ]),
               tabBuilder: (BuildContext context, int index) {
                 if (index == 0) {
-                  return TabHome();
+                  return CupertinoTabView(
+                    routes: <String, WidgetBuilder>{
+                      '/': (context) => TabHome(),
+                    },
+                  );
+//                  return TabHome();
                 } else if (index == 1) {
                   return TabClassify();
                 } else if (index == 2) {
