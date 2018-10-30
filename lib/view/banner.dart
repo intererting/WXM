@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:transformer_page_view/transformer_page_view.dart';
 import 'package:wxm/constants.dart';
 
 typedef void OnBannerClickListener(int index, dynamic itemData);

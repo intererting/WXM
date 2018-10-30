@@ -124,7 +124,7 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
                 ),
                 Column(
                   children: <Widget>[
-                    Image.asset('images/wsjt.png'),
+                    Image.asset("images/wsjt.png"),
                     Text('康答要闻')
                   ],
                 ),
@@ -165,9 +165,12 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
 
   Widget _buildAdView(int index, AdData itemData) {
 //    WxmTheme wxmTheme = WxmTheme.of(context);
-    return Image.network(
-      itemData.imgUrl,
-      fit: BoxFit.fill,
+    return Transform.scale(
+      scale: 0.5,
+      child: Image.network(
+        itemData.imgUrl,
+        fit: BoxFit.fill,
+      ),
     );
   }
 
@@ -287,23 +290,51 @@ class _TabHomeState extends State<TabHome> with WidgetsBindingObserver {
   }
 
   ///广告信息
-  void _getAdInfo() async {
+  void _getAdInfo() {
     try {
-      Response response = await WxmHttpClient()
+      WxmHttpClient()
           .dio
-          .post('getAdList', cancelToken: _cancelToken);
-      if (isSuccessResponse(response)) {
-        AdInfo adInfo = AdInfo.fromJson(response.data);
-        List<String> titles = new List();
-        for (AdData adData in adInfo.data) {
-          titles.add(adData.adInfo);
-          adData.imgUrl = await formatUrl(adData.imgUrl);
+          .post('getAdList', cancelToken: _cancelToken)
+          .then((Response response) async {
+        if (isSuccessResponse(response)) {
+          AdInfo adInfo = AdInfo.fromJson(response.data);
+          List<String> titles = new List();
+//          adInfo.data.forEach((AdData adData) async {
+//            print('xxxxxxxxxxxxxxxxxxxx');
+//            titles.add(adData.adInfo);
+//            adData.imgUrl = await formatUrl(adData.imgUrl);
+//          });
+
+//          Stream.fromIterable(adInfo.data).listen((AdData adData) {
+//            titles.add(adData.adInfo);
+//            formatUrl(adData.imgUrl).then((url) {
+//              adData.imgUrl = url;
+//              print('xxxxxxxxxxxxxxxxxxxx');
+//            });
+//          }, onDone: () {
+//            print('yyyyyyyyyyyyyyyyyyyyyyyyy');
+//            setState(() {
+//              this._adInfo = adInfo;
+//              this._titles = titles;
+//            });
+//          });
+//          Future.wait(
+//              adInfo.data.map((AdData adData) => formatUrl(adData.imgUrl))).
+
+          for (AdData adData in adInfo.data) {
+            titles.add(adData.adInfo);
+            adData.imgUrl = await formatUrl(adData.imgUrl);
+          }
+          setState(() {
+            this._adInfo = adInfo;
+            this._titles = titles;
+          });
         }
-        setState(() {
-          this._adInfo = adInfo;
-          this._titles = titles;
-        });
-      }
+      });
+
+//      Response response = await WxmHttpClient()
+//          .dio
+//          .post('getAdList', cancelToken: _cancelToken);
     } catch (e) {}
   }
 

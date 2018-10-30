@@ -14,7 +14,11 @@ dependencies:
   sqflite: any
   shared_preferences: ^0.4.2
   pull_to_refresh: ^1.1.5
+  flutter_swiper: ^1.1.4
+  flutter_redux: ">=0.5.2"
+  redux: ">=3.0.0"
   dio: ^1.0.6
+  oktoast: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -34,17 +38,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-  - images/splash.png
-  - images/user_guide_1.png
-  - images/user_guide_2.png
-  - images/user_guide_3.png
-  - images/tab_home.png
-  - images/tab_classify.png
-  - images/tab_message.png
-  - images/tab_mine.png
-  - images/tab_shoping_car.png
-  - images/wsjt.png
-  - images/wsmj.png
+  - images/
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

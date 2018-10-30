@@ -57,3 +57,14 @@ class HttpResult<T> {
     return data;
   }
 }
+
+class LoginInfo {
+  final String userName;
+
+  LoginInfo(this.userName);
+
+  @override
+  String toString() {
+    return ('$runtimeType');
+  }
+}
